@@ -54,24 +54,24 @@
             color: #94a3b8;
             font-size: 0.9rem;
         }
-        .success-loading {
+        .btn-close {
             margin-top: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            color: #64748b;
-            font-size: 0.875rem;
-        }
-        .success-loading .dot {
-            width: 6px;
-            height: 6px;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
             background: #22c55e;
-            border-radius: 50%;
-            animation: success-dot 1.2s ease-in-out infinite;
+            color: #0f172a;
+            transition: background 0.2s ease, transform 0.2s ease;
         }
-        .success-loading .dot:nth-child(2) { animation-delay: 0.2s; }
-        .success-loading .dot:nth-child(3) { animation-delay: 0.4s; }
+        .btn-close:hover {
+            background: #4ade80;
+        }
+        .btn-close:active {
+            transform: scale(0.98);
+        }
         @keyframes success-fade-in {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -80,22 +80,14 @@
             from { transform: scale(0.8); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
         }
-        @keyframes success-dot {
-            0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
-            40% { transform: scale(1); opacity: 1; }
-        }
     </style>
 </head>
 <body>
     <div class="success-card">
         <div class="success-icon"></div>
         <h2>Đăng nhập thành công!</h2>
-        <p>Đang chuyển hướng đến trang chủ...</p>
-        <div class="success-loading">
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-        </div>
+        <p>Nhấn đóng để chuyển đến trang chủ.</p>
+        <button type="button" class="btn-close" id="btn-close">Đóng</button>
     </div>
     <script>
         (function() {
@@ -103,9 +95,9 @@
             var homeUrl = @json($homeUrl);
             if (token && homeUrl) {
                 try { localStorage.setItem('auth_token', token); } catch (e) {}
-                setTimeout(function() {
+                document.getElementById('btn-close').onclick = function() {
                     window.location.href = homeUrl;
-                }, 800);
+                };
             }
         })();
     </script>

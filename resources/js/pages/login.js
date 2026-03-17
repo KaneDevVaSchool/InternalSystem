@@ -46,10 +46,15 @@ import { getConfig } from '../config.js';
         if (debug) console.log('[Google Login Debug] Response data:', { ...data, token: data.token ? '[SET]' : undefined });
         if (data.token) {
           localStorage.setItem('auth_token', data.token);
-          const textEl = loadingEl?.querySelector('.login-loading-text');
-          if (loadingEl) loadingEl.dataset.status = 'success';
-          if (textEl) textEl.textContent = 'Đăng nhập thành công! Đang chuyển hướng...';
-          await new Promise((r) => setTimeout(r, 600));
+          if (loadingEl) loadingEl.classList.remove('active');
+          await Swal.fire({
+            icon: 'success',
+            title: 'Đăng nhập thành công!',
+            text: 'Nhấn đóng để chuyển đến trang chủ.',
+            confirmButtonText: 'Đóng',
+            confirmButtonColor: '#22c55e',
+            allowOutsideClick: false,
+          });
           window.location.href = config.homeUrl;
         } else {
           showMsg(data.message || 'Đăng nhập thất bại.', 'error');
