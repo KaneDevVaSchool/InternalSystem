@@ -9,13 +9,20 @@ use Spatie\Permission\PermissionRegistrar;
 
 return new class extends Migration
 {
+    /** @var array<string, string> */
+    private array $tableNames = [
+        'permissions' => 'permissions',
+        'roles' => 'roles',
+        'model_has_permissions' => 'model_has_permissions',
+        'model_has_roles' => 'model_has_roles',
+        'role_has_permissions' => 'role_has_permissions',
+    ];
+
+    private string $modelMorphKey = 'model_id';
+
     public function up(): void
     {
-        $tableNames = config('permission.table_names');
-        $columnNames = config('permission.column_names');
-        $teams = config('permission.teams');
-
-        Schema::create($tableNames['permissions'], function (Blueprint $table) {
+        Schema::create($this->tableNames['permissions'], function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
             $table->string('guard_name');
@@ -23,7 +30,7 @@ return new class extends Migration
             $table->unique(['name', 'guard_name']);
         });
 
-        Schema::create($tableNames['roles'], function (Blueprint $table) use ($teams, $columnNames) {
+        Schema::create($this->tableNames['roles'], function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
             $table->string('guard_name');
@@ -31,40 +38,40 @@ return new class extends Migration
             $table->unique(['name', 'guard_name']);
         });
 
-        Schema::create($tableNames['model_has_permissions'], function (Blueprint $table) use ($tableNames, $columnNames) {
+        Schema::create($this->tableNames['model_has_permissions'], function (Blueprint $table) {
             $table->unsignedBigInteger(PermissionRegistrar::$pivotPermission);
             $table->string('model_type');
-            $table->unsignedBigInteger($columnNames['model_morph_key']);
-            $table->index([$columnNames['model_morph_key'], 'model_type']);
+            $table->unsignedBigInteger($this->modelMorphKey);
+            $table->index([$this->modelMorphKey, 'model_type']);
             $table->foreign(PermissionRegistrar::$pivotPermission)
                 ->references('id')
-                ->on($tableNames['permissions'])
+                ->on($this->tableNames['permissions'])
                 ->onDelete('cascade');
-            $table->primary([PermissionRegistrar::$pivotPermission, $columnNames['model_morph_key'], 'model_type']);
+            $table->primary([PermissionRegistrar::$pivotPermission, $this->modelMorphKey, 'model_type']);
         });
 
-        Schema::create($tableNames['model_has_roles'], function (Blueprint $table) use ($tableNames, $columnNames) {
+        Schema::create($this->tableNames['model_has_roles'], function (Blueprint $table) {
             $table->unsignedBigInteger(PermissionRegistrar::$pivotRole);
             $table->string('model_type');
-            $table->unsignedBigInteger($columnNames['model_morph_key']);
-            $table->index([$columnNames['model_morph_key'], 'model_type']);
+            $table->unsignedBigInteger($this->modelMorphKey);
+            $table->index([$this->modelMorphKey, 'model_type']);
             $table->foreign(PermissionRegistrar::$pivotRole)
                 ->references('id')
-                ->on($tableNames['roles'])
+                ->on($this->tableNames['roles'])
                 ->onDelete('cascade');
-            $table->primary([PermissionRegistrar::$pivotRole, $columnNames['model_morph_key'], 'model_type']);
+            $table->primary([PermissionRegistrar::$pivotRole, $this->modelMorphKey, 'model_type']);
         });
 
-        Schema::create($tableNames['role_has_permissions'], function (Blueprint $table) use ($tableNames) {
+        Schema::create($this->tableNames['role_has_permissions'], function (Blueprint $table) {
             $table->unsignedBigInteger(PermissionRegistrar::$pivotPermission);
             $table->unsignedBigInteger(PermissionRegistrar::$pivotRole);
             $table->foreign(PermissionRegistrar::$pivotPermission)
                 ->references('id')
-                ->on($tableNames['permissions'])
+                ->on($this->tableNames['permissions'])
                 ->onDelete('cascade');
             $table->foreign(PermissionRegistrar::$pivotRole)
                 ->references('id')
-                ->on($tableNames['roles'])
+                ->on($this->tableNames['roles'])
                 ->onDelete('cascade');
             $table->primary([PermissionRegistrar::$pivotPermission, PermissionRegistrar::$pivotRole]);
         });
@@ -72,11 +79,10 @@ return new class extends Migration
 
     public function down(): void
     {
-        $tableNames = config('permission.table_names');
-        Schema::drop($tableNames['role_has_permissions']);
-        Schema::drop($tableNames['model_has_roles']);
-        Schema::drop($tableNames['model_has_permissions']);
-        Schema::drop($tableNames['roles']);
-        Schema::drop($tableNames['permissions']);
+        Schema::drop($this->tableNames['role_has_permissions']);
+        Schema::drop($this->tableNames['model_has_roles']);
+        Schema::drop($this->tableNames['model_has_permissions']);
+        Schema::drop($this->tableNames['roles']);
+        Schema::drop($this->tableNames['permissions']);
     }
 };
