@@ -9,6 +9,18 @@
         window.handleCredentialResponse = function(r) {
             window._googleCredentialQueue.push(r);
         };
+        @if(config('app.debug'))
+        (function() {
+            var q = new URLSearchParams(location.search);
+            var h = location.hash ? location.hash.substring(0, 50) + '...' : '(empty)';
+            console.log('[Google Callback Debug] Page load', {
+                pathname: location.pathname,
+                searchKeys: [...q.keys()],
+                hasHash: !!location.hash,
+                hashPreview: h
+            });
+        })();
+        @endif
     </script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 @endpush

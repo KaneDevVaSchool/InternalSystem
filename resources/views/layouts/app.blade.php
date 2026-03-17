@@ -3,7 +3,8 @@
       data-api-url="{{ url('/api') }}"
       data-home-url="{{ url('/home') }}"
       data-login-url="{{ url('/') }}"
-      data-google-client-id="{{ config('auth.google.client_id') }}">
+      data-google-client-id="{{ config('auth.google.client_id') }}"
+      data-app-debug="{{ config('app.debug') ? 'true' : 'false' }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">

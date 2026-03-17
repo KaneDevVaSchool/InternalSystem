@@ -26,10 +26,20 @@ final class AuthController extends Controller
      */
     public function googleLogin(GoogleLoginRequest $request): JsonResponse
     {
+        $idToken = $request->validated('id_token');
+        if (config('app.debug')) {
+            Log::debug('Google login request', [
+                'token_length' => strlen($idToken),
+                'token_preview' => substr($idToken, 0, 20) . '...',
+            ]);
+        }
         try {
-            $user = $this->authService->loginWithGoogle($request->validated('id_token'));
+            $user = $this->authService->loginWithGoogle($idToken);
 
             $token = $user->createToken('auth-token')->plainTextToken;
+            if (config('app.debug')) {
+                Log::debug('Google login success', ['user_id' => $user->id, 'email' => $user->email]);
+            }
 
             return response()->json([
                 'message' => 'Authenticated successfully.',
@@ -39,12 +49,18 @@ final class AuthController extends Controller
             ]);
         } catch (GoogleAuthTokenInvalidException $e) {
             Log::warning('Google login failed: invalid token', ['error' => $e->getMessage()]);
+            if (config('app.debug')) {
+                Log::debug('Google login failure detail', ['exception' => get_class($e), 'trace' => $e->getTraceAsString()]);
+            }
             return response()->json(['message' => 'Invalid or expired token.'], 401);
         } catch (GoogleAuthDomainMismatchException $e) {
             Log::info('Google login rejected: domain mismatch', ['error' => $e->getMessage()]);
             return response()->json(['message' => $e->getMessage()], 403);
         } catch (GoogleAuthVerificationException $e) {
             Log::warning('Google login failed: verification', ['error' => $e->getMessage()]);
+            if (config('app.debug')) {
+                Log::debug('Google login failure detail', ['exception' => get_class($e)]);
+            }
             return response()->json(['message' => $e->getMessage()], 401);
         }
     }

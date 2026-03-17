@@ -8,5 +8,6 @@ export function getConfig() {
     homeUrl: el.dataset.homeUrl || '/home',
     loginUrl: el.dataset.loginUrl || '/',
     googleClientId: el.dataset.googleClientId || '',
+    debug: el.dataset.appDebug === 'true',
   };
 }

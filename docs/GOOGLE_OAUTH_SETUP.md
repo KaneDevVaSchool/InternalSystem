@@ -50,10 +50,14 @@
 ### Bước 2: Cấu hình .env
 
 ```env
+APP_URL=http://localhost:8000
 GOOGLE_CLIENT_ID=123456789-xxxxxxxx.apps.googleusercontent.com
 GOOGLE_ALLOWED_DOMAIN=your-domain.com
 ```
 
+- `APP_URL`: URL gốc của ứng dụng. **Quan trọng**: Callback URL = `{APP_URL}/auth/google/callback` → phải trùng với **Authorized redirect URIs** trong Google Cloud Console.
+  - Local: `http://localhost:8000` hoặc `http://127.0.0.1:8000`
+  - Production: `https://your-domain.com`
 - `GOOGLE_CLIENT_ID`: Client ID vừa tạo (kết thúc bằng `.apps.googleusercontent.com`)
 - `GOOGLE_ALLOWED_DOMAIN`: Tên domain Google Workspace (vd: `company.com`) - chỉ user @company.com mới đăng nhập được
 
@@ -65,8 +69,25 @@ php artisan config:clear
 
 ---
 
+## Debug
+
+Khi `APP_DEBUG=true` trong .env, hệ thống sẽ ghi log debug:
+
+- **Browser Console (F12)**:
+  - `[Google Login Debug]` - credential nhận được, request/response API
+  - `[Google Callback Debug]` - URL callback khi redirect từ Google
+- **Laravel log** (`storage/logs/debug/laravel-YYYY-MM-DD.log`):
+  - Token length, preview
+  - Thành công: user_id, email
+  - Thất bại: exception detail
+
+Đảm bảo `LOG_LEVEL=debug` trong .env để thấy `Log::debug()`.
+
+---
+
 ## Kiểm tra
 
-- URL bạn truy cập (vd: `http://localhost:8000`) **phải có** trong Authorized JavaScript origins
-- Nếu dùng domain khác (vd: `http://192.168.1.100:8000`) → thêm vào origins
+- `APP_URL` trong .env phải khớp với URL bạn truy cập (vd: `http://localhost:8000`) → callback sẽ là `{APP_URL}/auth/google/callback`
+- URL trong `APP_URL` **phải có** trong Authorized JavaScript origins và Authorized redirect URIs
+- Nếu dùng domain khác (vd: `http://192.168.1.100:8000`) → cập nhật `APP_URL` và thêm vào Google Cloud Console
 - Client ID không có khoảng trắng thừa, copy đầy đủ

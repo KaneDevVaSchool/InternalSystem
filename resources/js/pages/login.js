@@ -2,6 +2,7 @@ import { getConfig } from '../config.js';
 
 (function initLogin() {
   const config = getConfig();
+  const debug = config.debug;
 
   function showMsg(text, type) {
     const el = document.getElementById('login-msg');
@@ -16,7 +17,18 @@ import { getConfig } from '../config.js';
     if (loadingEl) loadingEl.classList.add('active');
     if (msgEl) msgEl.classList.remove('active');
 
-    fetch(`${config.apiUrl}/auth/google`, {
+    if (debug) {
+      console.log('[Google Login Debug] Credential nhận được:', {
+        hasCredential: !!response?.credential,
+        credentialLength: response?.credential?.length ?? 0,
+        clientId: response?.clientId,
+      });
+    }
+
+    const apiUrl = `${config.apiUrl}/auth/google`;
+    if (debug) console.log('[Google Login Debug] POST', apiUrl);
+
+    fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -26,8 +38,12 @@ import { getConfig } from '../config.js';
       },
       body: JSON.stringify({ id_token: response.credential }),
     })
-      .then((r) => r.json())
+      .then((r) => {
+        if (debug) console.log('[Google Login Debug] Response status:', r.status, r.statusText);
+        return r.json();
+      })
       .then((data) => {
+        if (debug) console.log('[Google Login Debug] Response data:', { ...data, token: data.token ? '[SET]' : undefined });
         if (data.token) {
           localStorage.setItem('auth_token', data.token);
           window.location.href = config.homeUrl;
@@ -35,7 +51,8 @@ import { getConfig } from '../config.js';
           showMsg(data.message || 'Đăng nhập thất bại.', 'error');
         }
       })
-      .catch(() => {
+      .catch((err) => {
+        if (debug) console.error('[Google Login Debug] Lỗi:', err);
         showMsg('Lỗi kết nối. Vui lòng thử lại.', 'error');
       })
       .finally(() => {
@@ -45,11 +62,13 @@ import { getConfig } from '../config.js';
 
   // Gán callback thật, xử lý queue nếu Google đã gọi trước khi script load
   window.handleCredentialResponse = function handleCredentialResponse(response) {
+    if (debug) console.log('[Google Login Debug] handleCredentialResponse được gọi');
     processCredential(response);
   };
 
   // Xử lý credential đã queue (One Tap có thể gọi trước khi script load)
   const queue = window._googleCredentialQueue || [];
   window._googleCredentialQueue = [];
+  if (debug && queue.length > 0) console.log('[Google Login Debug] Queue có', queue.length, 'credential');
   queue.forEach(processCredential);
 })();
