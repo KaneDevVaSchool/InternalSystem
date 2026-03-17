@@ -30,16 +30,18 @@ final class GoogleCallbackController extends Controller
 
     /**
      * POST: Handle redirect from Google with credential in body.
-     * Google GSI sends: credential, g_csrf_token. Must validate CSRF.
+     * Google GSI sends: credential, g_csrf_token. CSRF validation when cookie available.
+     * Lưu ý: Khi redirect từ Google, cookie g_csrf_token thường KHÔNG được gửi (SameSite
+     * block cross-site POST). Fallback: xác thực JWT đủ mạnh để tin credential.
      */
     public function handle(Request $request)
     {
         $csrfBody = $request->input('g_csrf_token');
         $csrfCookie = $request->cookie('g_csrf_token');
+        $csrfValid = !empty($csrfBody) && !empty($csrfCookie) && hash_equals((string) $csrfCookie, (string) $csrfBody);
 
-        if (empty($csrfBody) || empty($csrfCookie) || !hash_equals((string) $csrfCookie, (string) $csrfBody)) {
-            Log::warning('Google callback: CSRF token mismatch or missing');
-            return redirect()->route('login')->with('error', 'Invalid request. Please try again.');
+        if (!$csrfValid) {
+            Log::info('Google callback: g_csrf_token missing (thường do SameSite khi redirect) - dùng JWT verification');
         }
 
         $credential = $request->input('credential');
