@@ -35,9 +35,9 @@
             <div id="g_id_onload"
                  data-client_id="{{ $googleClientId }}"
                  data-context="signin"
-                 data-ux_mode="popup"
+                 data-ux_mode="redirect"
                  data-callback="handleCredentialResponse"
-                 data-auto_prompt="true">
+                 data-login_uri="{{ url('/') }}">
             </div>
             <div class="g_id_signin"
                  data-type="standard"

@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('auth.login');
-})->middleware('google.signin.headers')->name('login');
+})->name('login');
 
 Route::get('/home', function () {
     return view('home');
