@@ -1,0 +1,68 @@
+@import '../app.css';
+
+body {
+  background: linear-gradient(135deg, #1e3a5f 0%, var(--color-bg) 100%);
+}
+
+.app-nav {
+  background: rgba(15, 23, 42, 0.9);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.app-nav h1 {
+  font-size: 1.25rem;
+}
+
+.app-nav-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.app-user-info {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.btn-logout {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+  background: var(--color-error-bg);
+  color: var(--color-error-text);
+}
+
+.btn-logout:hover {
+  background: var(--color-error-border);
+}
+
+.app-main {
+  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.app-card {
+  background: var(--color-bg-card);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.app-card h2 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-text-muted);
+}
+
+.app-card .app-card-value {
+  font-size: 1.25rem;
+}

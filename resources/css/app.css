@@ -1,0 +1,27 @@
+/* Base & Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* CSS Variables */
+:root {
+  --font-family: 'Figtree', system-ui, sans-serif;
+  --color-bg: #0f172a;
+  --color-bg-card: rgba(30, 41, 59, 0.6);
+  --color-bg-card-strong: rgba(30, 41, 59, 0.8);
+  --color-text: #e2e8f0;
+  --color-text-muted: #94a3b8;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-error-bg: rgba(239, 68, 68, 0.2);
+  --color-error-text: #fca5a5;
+  --color-error-border: rgba(239, 68, 68, 0.3);
+}
+
+body {
+  font-family: var(--font-family);
+  min-height: 100vh;
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+}
