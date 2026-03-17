@@ -19,6 +19,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        foreach (['debug', 'info', 'error'] as $dir) {
+            $path = storage_path("logs/{$dir}");
+            if (!is_dir($path)) {
+                mkdir($path, 0755, true);
+            }
+        }
     }
 }

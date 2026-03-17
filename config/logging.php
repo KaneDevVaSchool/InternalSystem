@@ -54,7 +54,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single'],
+            'channels' => explode(',', env('LOG_STACK_CHANNELS', 'debug_daily,info_daily,error_daily')),
             'ignore_exceptions' => false,
         ],
 
@@ -70,6 +70,39 @@ return [
             'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => 14,
+            'replace_placeholders' => true,
+        ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Custom: Debug / Info / Error - Tách file theo ngày
+        |--------------------------------------------------------------------------
+        | storage/logs/debug/laravel-YYYY-MM-DD.log
+        | storage/logs/info/laravel-YYYY-MM-DD.log
+        | storage/logs/error/laravel-YYYY-MM-DD.log
+        */
+
+        'debug_daily' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/debug/laravel.log'),
+            'level' => 'debug',
+            'days' => (int) env('LOG_DAYS', 14),
+            'replace_placeholders' => true,
+        ],
+
+        'info_daily' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/info/laravel.log'),
+            'level' => 'info',
+            'days' => (int) env('LOG_DAYS', 14),
+            'replace_placeholders' => true,
+        ],
+
+        'error_daily' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/error/laravel.log'),
+            'level' => 'error',
+            'days' => (int) env('LOG_DAYS', 14),
             'replace_placeholders' => true,
         ],
 
