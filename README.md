@@ -1,3 +1,56 @@
+# PM Manage – Internal System
+
+Modular Monolith + Clean Architecture with Google OAuth (domain-restricted), Laravel Sanctum, and role-based access.
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for full architecture documentation.
+
+## Setup
+
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+```
+
+Configure `.env`:
+- `GOOGLE_CLIENT_ID` – Google OAuth Web Client ID
+- `GOOGLE_ALLOWED_DOMAIN` – e.g. `your-domain.com`
+- `ADMIN_EMAILS` – Comma-separated admin emails
+
+```bash
+php artisan migrate
+php artisan db:seed
+```
+
+## API Examples
+
+### Login (Google ID Token)
+```bash
+curl -X POST http://localhost:8000/api/auth/google \
+  -H "Content-Type: application/json" \
+  -d '{"id_token":"<GOOGLE_ID_TOKEN>"}'
+```
+
+### Protected Request
+```bash
+curl -H "Authorization: Bearer <TOKEN>" \
+  http://localhost:8000/api/auth/me
+```
+
+### User Profile
+```bash
+curl -H "Authorization: Bearer <TOKEN>" \
+  http://localhost:8000/api/user/profile
+```
+
+### Admin Stats
+```bash
+curl -H "Authorization: Bearer <TOKEN>" \
+  http://localhost:8000/api/admin/stats
+```
+
+---
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
