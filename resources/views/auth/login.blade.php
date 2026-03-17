@@ -37,7 +37,7 @@
                  data-context="signin"
                  data-ux_mode="redirect"
                  data-callback="handleCredentialResponse"
-                 data-login_uri="{{ url('/') }}">
+                 data-login_uri="{{ url('/auth/google/callback') }}">
             </div>
             <div class="g_id_signin"
                  data-type="standard"

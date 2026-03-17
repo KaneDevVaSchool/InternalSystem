@@ -34,11 +34,16 @@
    ```
    https://your-domain.com
    ```
-10. **Authorized redirect URIs** (có thể để trống cho popup flow, hoặc thêm):
+10. **Authorized redirect URIs** (bắt buộc khi dùng redirect flow):
     ```
-    http://localhost
-    http://localhost:8000
-    https://your-domain.com
+    http://localhost/auth/google/callback
+    http://localhost:8000/auth/google/callback
+    http://127.0.0.1/auth/google/callback
+    http://127.0.0.1:8000/auth/google/callback
+    ```
+    Và khi deploy:
+    ```
+    https://your-domain.com/auth/google/callback
     ```
 11. Bấm **Create** → copy **Client ID**
 

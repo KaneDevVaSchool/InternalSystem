@@ -17,6 +17,10 @@ Route::get('/', function () {
     return view('auth.login');
 })->name('login');
 
+Route::get('/auth/google/callback', function () {
+    return view('auth.google-callback');
+})->name('auth.google.callback');
+
 Route::get('/home', function () {
     return view('home');
 })->name('home');
