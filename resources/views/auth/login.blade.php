@@ -26,7 +26,7 @@
         <h1>{{ config('app.name') }}</h1>
         <p>Đăng nhập bằng tài khoản Google của tổ chức</p>
 
-        <div id="login-msg" class="login-msg"></div>
+        <div id="login-msg" class="login-msg @if(session('error')) error active @endif">@if(session('error')){{ session('error') }}@endif</div>
         <div id="login-loading" class="login-loading">Đang xử lý...</div>
 
         @php $googleClientId = config('auth.google.client_id'); @endphp

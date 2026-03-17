@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\GoogleCallbackController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,9 +18,8 @@ Route::get('/', function () {
     return view('auth.login');
 })->name('login');
 
-Route::get('/auth/google/callback', function () {
-    return view('auth.google-callback');
-})->name('auth.google.callback');
+Route::get('/auth/google/callback', [GoogleCallbackController::class, 'show'])->name('auth.google.callback');
+Route::post('/auth/google/callback', [GoogleCallbackController::class, 'handle'])->name('auth.google.callback.post');
 
 Route::get('/home', function () {
     return view('home');

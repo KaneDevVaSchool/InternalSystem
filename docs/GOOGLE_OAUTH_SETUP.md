@@ -34,7 +34,7 @@
    ```
    https://your-domain.com
    ```
-10. **Authorized redirect URIs** (bắt buộc khi dùng redirect flow):
+10. **Authorized redirect URIs** (bắt buộc khi dùng redirect flow). Google GSI gửi credential qua **POST** về URL này:
     ```
     http://localhost/auth/google/callback
     http://localhost:8000/auth/google/callback
