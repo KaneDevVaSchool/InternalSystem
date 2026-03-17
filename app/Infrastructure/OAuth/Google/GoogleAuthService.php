@@ -12,14 +12,17 @@ use Google\Client as GoogleClient;
 
 final class GoogleAuthService
 {
+    /**
+     * @param  array<int, string>  $allowedDomains
+     */
     public function __construct(
         private string $clientId,
-        private string $allowedDomain,
+        private array $allowedDomains,
     ) {}
 
     /**
      * Verify Google ID token and extract user payload.
-     * Rejects token if domain (hd claim) does not match allowed domain.
+     * Rejects token if domain (hd claim) does not match allowed domains.
      *
      * @throws GoogleAuthTokenInvalidException
      * @throws GoogleAuthDomainMismatchException
@@ -44,12 +47,12 @@ final class GoogleAuthService
 
         // CRITICAL: Validate hosted domain (hd claim)
         $hd = $payload['hd'] ?? null;
-        if ($hd === null || $hd !== $this->allowedDomain) {
+        if ($hd === null || !in_array($hd, $this->allowedDomains, true)) {
             throw new GoogleAuthDomainMismatchException(
                 sprintf(
-                    "Domain '%s' is not allowed. Only @%s accounts may sign in.",
+                    "Domain '%s' is not allowed. Allowed: @%s",
                     (string) $hd,
-                    $this->allowedDomain
+                    implode(', @', $this->allowedDomains)
                 )
             );
         }

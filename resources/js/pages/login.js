@@ -10,12 +10,7 @@ import { getConfig } from '../config.js';
     el.className = `login-msg ${type} active`;
   }
 
-  function hideMsg() {
-    const el = document.getElementById('login-msg');
-    if (el) el.style.display = 'none';
-  }
-
-  window.handleCredentialResponse = function handleCredentialResponse(response) {
+  function processCredential(response) {
     const loadingEl = document.getElementById('login-loading');
     const msgEl = document.getElementById('login-msg');
     if (loadingEl) loadingEl.classList.add('active');
@@ -46,5 +41,15 @@ import { getConfig } from '../config.js';
       .finally(() => {
         if (loadingEl) loadingEl.classList.remove('active');
       });
+  }
+
+  // Gán callback thật, xử lý queue nếu Google đã gọi trước khi script load
+  window.handleCredentialResponse = function handleCredentialResponse(response) {
+    processCredential(response);
   };
+
+  // Xử lý credential đã queue (One Tap có thể gọi trước khi script load)
+  const queue = window._googleCredentialQueue || [];
+  window._googleCredentialQueue = [];
+  queue.forEach(processCredential);
 })();

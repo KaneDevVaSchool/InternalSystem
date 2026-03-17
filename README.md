@@ -13,9 +13,15 @@ php artisan key:generate
 ```
 
 Configure `.env`:
-- `GOOGLE_CLIENT_ID` – Google OAuth Web Client ID
+- `GOOGLE_CLIENT_ID` – Google OAuth Web Client ID (từ Google Cloud Console)
 - `GOOGLE_ALLOWED_DOMAIN` – e.g. `your-domain.com`
 - `ADMIN_EMAILS` – Comma-separated admin emails
+
+**Quan trọng**: Trong Google Cloud Console → Credentials → OAuth client → **Authorized JavaScript origins** phải thêm:
+- `http://localhost:8000` (dev)
+- `https://your-domain.com` (production)
+
+Nếu thiếu → lỗi **401 invalid_client**. Xem chi tiết: `docs/GOOGLE_OAUTH_SETUP.md`
 
 ```bash
 php artisan migrate
