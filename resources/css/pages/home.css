@@ -37,10 +37,15 @@ body {
   border: none;
   background: var(--color-error-bg);
   color: var(--color-error-text);
+  transition: background 0.25s ease, transform 0.2s ease;
 }
 
 .btn-logout:hover {
   background: var(--color-error-border);
+}
+
+.btn-logout:active {
+  transform: scale(0.98);
 }
 
 .app-main {
@@ -55,6 +60,7 @@ body {
   padding: 1.5rem;
   margin-bottom: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .app-card h2 {

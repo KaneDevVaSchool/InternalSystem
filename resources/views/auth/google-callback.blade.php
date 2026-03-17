@@ -36,7 +36,10 @@
 @section('content')
     <div class="login-card">
         <h1>{{ config('app.name') }}</h1>
-        <div id="login-loading" class="login-loading active">Đang xử lý đăng nhập...</div>
+        <div id="login-loading" class="login-loading active">
+            <span class="login-loading-spinner"></span>
+            <span class="login-loading-text">Đang xử lý đăng nhập...</span>
+        </div>
         <div id="login-msg" class="login-msg"></div>
     </div>
 @endsection

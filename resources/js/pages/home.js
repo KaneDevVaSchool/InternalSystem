@@ -37,16 +37,37 @@ import { getConfig } from '../config.js';
     });
 
   window.logout = function logout() {
-    if (token) {
-      fetch(`${config.apiUrl}/auth/logout`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/json',
+    Swal.fire({
+      title: 'Đăng xuất?',
+      text: 'Bạn có chắc muốn đăng xuất khỏi tài khoản?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Đăng xuất',
+      cancelButtonText: 'Hủy',
+    }).then((result) => {
+      if (!result.isConfirmed) return;
+      Swal.fire({
+        title: 'Đang đăng xuất...',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
         },
-      }).finally(() => {});
-    }
-    localStorage.removeItem('auth_token');
-    window.location.href = config.loginUrl;
+      });
+      if (token) {
+        fetch(`${config.apiUrl}/auth/logout`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
+        }).finally(() => {});
+      }
+      localStorage.removeItem('auth_token');
+      setTimeout(() => {
+        window.location.href = config.loginUrl;
+      }, 300);
+    });
   };
 })();

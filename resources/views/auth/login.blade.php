@@ -27,7 +27,10 @@
         <p>Đăng nhập bằng tài khoản Google của tổ chức</p>
 
         <div id="login-msg" class="login-msg @if(session('error')) error active @endif">@if(session('error')){{ session('error') }}@endif</div>
-        <div id="login-loading" class="login-loading">Đang xử lý...</div>
+        <div id="login-loading" class="login-loading">
+            <span class="login-loading-spinner"></span>
+            <span class="login-loading-text">Đang xử lý...</span>
+        </div>
 
         @php $googleClientId = config('auth.google.client_id'); @endphp
         <div class="google-btn-wrap">

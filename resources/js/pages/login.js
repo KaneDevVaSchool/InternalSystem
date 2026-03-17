@@ -42,10 +42,14 @@ import { getConfig } from '../config.js';
         if (debug) console.log('[Google Login Debug] Response status:', r.status, r.statusText);
         return r.json();
       })
-      .then((data) => {
+      .then(async (data) => {
         if (debug) console.log('[Google Login Debug] Response data:', { ...data, token: data.token ? '[SET]' : undefined });
         if (data.token) {
           localStorage.setItem('auth_token', data.token);
+          const textEl = loadingEl?.querySelector('.login-loading-text');
+          if (loadingEl) loadingEl.dataset.status = 'success';
+          if (textEl) textEl.textContent = 'Đăng nhập thành công! Đang chuyển hướng...';
+          await new Promise((r) => setTimeout(r, 600));
           window.location.href = config.homeUrl;
         } else {
           showMsg(data.message || 'Đăng nhập thất bại.', 'error');
@@ -56,7 +60,7 @@ import { getConfig } from '../config.js';
         showMsg('Lỗi kết nối. Vui lòng thử lại.', 'error');
       })
       .finally(() => {
-        if (loadingEl) loadingEl.classList.remove('active');
+        if (loadingEl && !loadingEl.dataset.status) loadingEl.classList.remove('active');
       });
   }
 
