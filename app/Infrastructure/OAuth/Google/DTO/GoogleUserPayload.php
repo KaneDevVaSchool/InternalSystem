@@ -6,13 +6,13 @@ namespace App\Infrastructure\OAuth\Google\DTO;
 
 use Illuminate\Contracts\Support\Arrayable;
 
-final readonly class GoogleUserPayload implements Arrayable
+final class GoogleUserPayload implements Arrayable
 {
     public function __construct(
-        public string $email,
-        public string $name,
-        public ?string $avatar = null,
-        public ?string $googleId = null,
+        public readonly string $email,
+        public readonly string $name,
+        public readonly ?string $avatar = null,
+        public readonly ?string $googleId = null,
     ) {}
 
     public function toArray(): array
