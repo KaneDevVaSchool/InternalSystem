@@ -12,8 +12,6 @@ use App\Modules\Auth\Services\AuthService;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\View\View;
-
 final class GoogleCallbackController extends Controller
 {
     public function __construct(
@@ -21,11 +19,11 @@ final class GoogleCallbackController extends Controller
     ) {}
 
     /**
-     * GET: Render callback page (credential in URL fragment - client-side parsing).
+     * GET: Redirect to login. Google sends credential via POST to handle().
      */
-    public function show(): View
+    public function show()
     {
-        return view('auth.google-callback');
+        return redirect()->route('login');
     }
 
     /**
@@ -36,6 +34,8 @@ final class GoogleCallbackController extends Controller
      */
     public function handle(Request $request)
     {
+        $intent = $request->query('intent');
+
         $csrfBody = $request->input('g_csrf_token');
         $csrfCookie = $request->cookie('g_csrf_token');
         $csrfValid = !empty($csrfBody) && !empty($csrfCookie) && hash_equals((string) $csrfCookie, (string) $csrfBody);
@@ -47,23 +47,25 @@ final class GoogleCallbackController extends Controller
         $credential = $request->input('credential');
         if (empty($credential) || !is_string($credential)) {
             Log::warning('Google callback: Missing credential');
-            return redirect()->route('login')->with('error', 'Invalid credential. Please try again.');
+            return redirect($intent === 'admin' ? route('admin.login') : route('login'))->with('error', 'Invalid credential. Please try again.');
         }
 
         try {
             $user = $this->authService->loginWithGoogle($credential);
             $token = $user->createToken('auth-token')->plainTextToken;
 
+            $homeUrl = $intent === 'admin' ? url('/admin') : url(RouteServiceProvider::HOME);
+
             return view('auth.google-callback-complete', [
                 'token' => $token,
-                'homeUrl' => url(RouteServiceProvider::HOME),
+                'homeUrl' => $homeUrl,
             ]);
         } catch (GoogleAuthTokenInvalidException|GoogleAuthVerificationException $e) {
             Log::warning('Google callback: Token invalid', ['error' => $e->getMessage()]);
-            return redirect()->route('login')->with('error', 'Invalid or expired token. Please try again.');
+            return redirect($intent === 'admin' ? route('admin.login') : route('login'))->with('error', 'Invalid or expired token. Please try again.');
         } catch (GoogleAuthDomainMismatchException $e) {
             Log::info('Google callback: Domain mismatch', ['error' => $e->getMessage()]);
-            return redirect()->route('login')->with('error', $e->getMessage());
+            return redirect($intent === 'admin' ? route('admin.login') : route('login'))->with('error', $e->getMessage());
         }
     }
 }

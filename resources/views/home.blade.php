@@ -15,6 +15,7 @@
         <h1>{{ config('app.name') }}</h1>
         <div class="app-nav-actions">
             <span class="app-user-info" id="user-info">Đang tải...</span>
+            <a href="{{ url('/admin') }}" class="app-nav-link" id="admin-link" style="display: none;">Admin</a>
             <a href="#" class="btn-logout" onclick="logout(); return false;">Đăng xuất</a>
         </div>
     </nav>

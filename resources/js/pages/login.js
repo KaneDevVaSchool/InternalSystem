@@ -3,81 +3,120 @@ import { getConfig } from '../config.js';
 (function initLogin() {
   const config = getConfig();
   const debug = config.debug;
+  let isProcessing = false;
+
+  const isAdminLogin = document.querySelector('[data-login-type="admin"]');
+  const redirectUrl = isAdminLogin ? (window.location.origin + '/admin') : config.homeUrl;
+
+  const MSG = {
+    ERR_NETWORK: 'Lỗi kết nối. Vui lòng kiểm tra mạng và thử lại.',
+    ERR_RATE_LIMIT: 'Đăng nhập quá nhiều lần. Vui lòng đợi 1 phút.',
+    ERR_SERVER: 'Lỗi hệ thống. Vui lòng thử lại sau.',
+    ERR_INVALID: 'Đăng nhập thất bại. Vui lòng thử lại.',
+  };
 
   function showMsg(text, type) {
     const el = document.getElementById('login-msg');
     if (!el) return;
     el.textContent = text;
     el.className = `login-msg ${type} active`;
+    el.setAttribute('role', 'alert');
+  }
+
+  function setLoading(active, status) {
+    const el = document.getElementById('login-loading');
+    if (!el) return;
+    el.classList.toggle('active', active);
+    if (status) el.dataset.status = status;
   }
 
   function processCredential(response) {
+    if (isProcessing) return;
+    const credential = response?.credential;
+    if (!credential) {
+      showMsg(MSG.ERR_INVALID, 'error');
+      return;
+    }
+
+    isProcessing = true;
     const loadingEl = document.getElementById('login-loading');
     const msgEl = document.getElementById('login-msg');
-    if (loadingEl) loadingEl.classList.add('active');
     if (msgEl) msgEl.classList.remove('active');
+    setLoading(true);
 
     if (debug) {
-      console.log('[Google Login Debug] Credential nhận được:', {
-        hasCredential: !!response?.credential,
-        credentialLength: response?.credential?.length ?? 0,
-        clientId: response?.clientId,
-      });
+      console.log('[Google Login] Credential received', { length: credential.length });
     }
 
     const apiUrl = `${config.apiUrl}/auth/google`;
-    if (debug) console.log('[Google Login Debug] POST', apiUrl);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
 
     fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'X-Requested-With': 'XMLHttpRequest',
         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
       },
-      body: JSON.stringify({ id_token: response.credential }),
+      body: JSON.stringify({ id_token: credential }),
+      signal: controller.signal,
     })
-      .then((r) => {
-        if (debug) console.log('[Google Login Debug] Response status:', r.status, r.statusText);
-        return r.json();
+      .then((res) => {
+        clearTimeout(timeoutId);
+        if (res.status === 429) {
+          throw new Error(MSG.ERR_RATE_LIMIT);
+        }
+        if (!res.ok) {
+          return res.json().then((data) => {
+            throw new Error(data.message || MSG.ERR_SERVER);
+          }).catch((e) => {
+            if (e instanceof Error && e.message !== MSG.ERR_SERVER) throw e;
+            throw new Error(MSG.ERR_SERVER);
+          });
+        }
+        return res.json();
       })
-      .then(async (data) => {
-        if (debug) console.log('[Google Login Debug] Response data:', { ...data, token: data.token ? '[SET]' : undefined });
+      .then((data) => {
         if (data.token) {
           localStorage.setItem('auth_token', data.token);
-          if (loadingEl) loadingEl.classList.remove('active');
-          await Swal.fire({
-            icon: 'success',
-            title: 'Đăng nhập thành công!',
-            text: 'Nhấn đóng để chuyển đến trang chủ.',
-            confirmButtonText: 'Đóng',
-            confirmButtonColor: '#22c55e',
-            allowOutsideClick: false,
-          });
-          window.location.href = config.homeUrl;
+          setLoading(true, 'success');
+          if (typeof Swal !== 'undefined') {
+            Swal.fire({
+              icon: 'success',
+              title: 'Đăng nhập thành công!',
+              timer: 1500,
+              showConfirmButton: false,
+              allowOutsideClick: false,
+            }).then(() => {
+              window.location.href = redirectUrl;
+            });
+          } else {
+            window.location.href = redirectUrl;
+          }
         } else {
-          showMsg(data.message || 'Đăng nhập thất bại.', 'error');
+          isProcessing = false;
+          setLoading(false);
+          showMsg(data.message || MSG.ERR_INVALID, 'error');
         }
       })
       .catch((err) => {
-        if (debug) console.error('[Google Login Debug] Lỗi:', err);
-        showMsg('Lỗi kết nối. Vui lòng thử lại.', 'error');
-      })
-      .finally(() => {
-        if (loadingEl && !loadingEl.dataset.status) loadingEl.classList.remove('active');
+        clearTimeout(timeoutId);
+        isProcessing = false;
+        setLoading(false);
+        const msg = err.name === 'AbortError' ? MSG.ERR_NETWORK : (err.message || MSG.ERR_NETWORK);
+        showMsg(msg, 'error');
+        if (debug) console.error('[Google Login]', err);
       });
   }
 
-  // Gán callback thật, xử lý queue nếu Google đã gọi trước khi script load
   window.handleCredentialResponse = function handleCredentialResponse(response) {
-    if (debug) console.log('[Google Login Debug] handleCredentialResponse được gọi');
+    if (debug) console.log('[Google Login] handleCredentialResponse called');
     processCredential(response);
   };
 
-  // Xử lý credential đã queue (One Tap có thể gọi trước khi script load)
   const queue = window._googleCredentialQueue || [];
   window._googleCredentialQueue = [];
-  if (debug && queue.length > 0) console.log('[Google Login Debug] Queue có', queue.length, 'credential');
   queue.forEach(processCredential);
 })();

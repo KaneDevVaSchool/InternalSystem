@@ -14,16 +14,17 @@ final class UserInfoPolicy
      */
     public function viewSensitive(User $authenticatedUser, UserInfo $userInfo): bool
     {
-        return $authenticatedUser->id === $userInfo->user_id
-            || $authenticatedUser->hasRole('admin');
+        if ($authenticatedUser->id === $userInfo->user_id) {
+            return $authenticatedUser->can('user.info.view_sensitive');
+        }
+        return $authenticatedUser->can('admin.users.view');
     }
 
-    /**
-     * Chỉ user tự sửa hoặc admin.
-     */
     public function update(User $authenticatedUser, UserInfo $userInfo): bool
     {
-        return $authenticatedUser->id === $userInfo->user_id
-            || $authenticatedUser->hasRole('admin');
+        if ($authenticatedUser->id === $userInfo->user_id) {
+            return $authenticatedUser->can('user.profile.update');
+        }
+        return $authenticatedUser->can('admin.users.manage');
     }
 }

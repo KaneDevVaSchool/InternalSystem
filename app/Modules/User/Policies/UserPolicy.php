@@ -10,11 +10,14 @@ final class UserPolicy
 {
     public function view(User $authenticatedUser, User $user): bool
     {
-        return $authenticatedUser->id === $user->id || $authenticatedUser->hasRole('admin');
+        if ($authenticatedUser->id === $user->id) {
+            return $authenticatedUser->can('user.profile.view');
+        }
+        return $authenticatedUser->can('admin.users.view');
     }
 
     public function update(User $authenticatedUser, User $user): bool
     {
-        return $authenticatedUser->id === $user->id;
+        return $authenticatedUser->id === $user->id && $authenticatedUser->can('user.profile.update');
     }
 }

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', config('app.name') . ' - Đăng nhập')
+@section('title', config('app.name') . ' - Đăng nhập Admin')
 
 @push('head')
     <script>
@@ -19,11 +19,11 @@
 @endpush
 
 @section('content')
-    <main class="login-page" role="main" data-login-type="user">
+    <main class="login-page login-page--admin" role="main" data-login-type="admin">
         <div class="login-card" aria-labelledby="login-title">
-            <h1 id="login-title">{{ config('app.name') }}</h1>
-            <p class="login-subtitle">Đăng nhập bằng tài khoản Google của tổ chức</p>
-            <p class="login-type-label">Trang đăng nhập cho người dùng</p>
+            <h1 id="login-title">{{ config('app.name') }} <span class="login-badge-admin">Admin</span></h1>
+            <p class="login-subtitle">Đăng nhập Admin bằng tài khoản Google</p>
+            <p class="login-type-label">Trang đăng nhập cho quản trị viên</p>
 
             @php
                 $googleClientId = config('auth.google.client_id');
@@ -43,7 +43,7 @@
                          data-context="signin"
                          data-ux_mode="redirect"
                          data-callback="handleCredentialResponse"
-                         data-login_uri="{{ url('/auth/google/callback') }}"></div>
+                         data-login_uri="{{ url('/auth/google/callback?intent=admin') }}"></div>
                     <div class="g_id_signin"
                          data-type="standard"
                          data-shape="rectangular"
@@ -58,7 +58,7 @@
             @endif
 
             <p class="login-switch">
-                <a href="{{ url('/admin/login') }}">Đăng nhập Admin →</a>
+                <a href="{{ url('/') }}">← Đăng nhập cho người dùng</a>
             </p>
         </div>
     </main>

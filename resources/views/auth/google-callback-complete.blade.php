@@ -95,9 +95,9 @@
             var homeUrl = @json($homeUrl);
             if (token && homeUrl) {
                 try { localStorage.setItem('auth_token', token); } catch (e) {}
-                document.getElementById('btn-close').onclick = function() {
-                    window.location.href = homeUrl;
-                };
+                var btn = document.getElementById('btn-close');
+                btn.onclick = function() { window.location.href = homeUrl; };
+                setTimeout(function() { window.location.href = homeUrl; }, 2000);
             }
         })();
     </script>

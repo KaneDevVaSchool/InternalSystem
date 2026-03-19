@@ -17,6 +17,7 @@ final class ProfileDTO
         public int $contributionPoint,
         public ?string $level,
         public array $roles,
+        public array $permissions,
         public ?array $userInfoSafe,
         public ?array $userInfoSensitive,
     ) {}
@@ -38,6 +39,7 @@ final class ProfileDTO
             contributionPoint: $user->contribution_point ?? 0,
             level: $user->level,
             roles: $user->getRoleNames()->toArray(),
+            permissions: $user->getAllPermissions()->pluck('name')->toArray(),
             userInfoSafe: $safe,
             userInfoSensitive: $sensitive,
         );
@@ -62,6 +64,7 @@ final class ProfileDTO
             'contribution_point' => $this->contributionPoint,
             'level' => $this->level,
             'roles' => $this->roles,
+            'permissions' => $this->permissions,
             'user_info' => !empty($userInfo) ? $userInfo : null,
         ];
     }

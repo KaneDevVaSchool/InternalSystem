@@ -27,11 +27,15 @@ import { getConfig } from '../config.js';
       if (data?.user) {
         const userInfoEl = document.getElementById('user-info');
         const welcomeEl = document.getElementById('welcome');
+        const adminLink = document.getElementById('admin-link');
         if (userInfoEl) {
           userInfoEl.textContent = `${data.user.name} (${data.user.email})`;
         }
         if (welcomeEl) {
           welcomeEl.textContent = `Xin chào, ${data.user.name}!`;
+        }
+        if (adminLink && (data.user.roles || []).includes('admin')) {
+          adminLink.style.display = '';
         }
       }
     });

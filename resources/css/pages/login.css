@@ -1,9 +1,15 @@
 @import '../app.css';
 
-body {
+.login-page {
   display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  padding: 1.5rem;
+}
+
+body {
   background: linear-gradient(135deg, #1e3a5f 0%, var(--color-bg) 100%);
 }
 
@@ -35,7 +41,46 @@ body {
   color: var(--color-text-muted);
   font-size: 0.9rem;
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.login-type-label {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  opacity: 0.8;
+  margin-bottom: 1.5rem !important;
+}
+
+.login-badge-admin {
+  font-size: 0.6rem;
+  padding: 0.2rem 0.5rem;
+  background: rgba(34, 197, 94, 0.3);
+  color: #4ade80;
+  border-radius: 6px;
+  margin-left: 0.5rem;
+  font-weight: 500;
+}
+
+.login-switch {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.login-switch a {
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.login-switch a:hover {
+  color: var(--color-text);
+}
+
+.login-page--admin .login-card {
+  border-color: rgba(34, 197, 94, 0.2);
 }
 
 .google-btn-wrap {

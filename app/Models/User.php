@@ -84,6 +84,7 @@ class User extends Authenticatable
             'contribution_point' => (int) ($this->contribution_point ?? 0),
             'level' => $this->level,
             'roles' => $this->getRoleNames()->toArray(),
+            'permissions' => $this->getAllPermissions()->pluck('name')->toArray(),
         ];
     }
 

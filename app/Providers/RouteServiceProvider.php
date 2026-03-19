@@ -32,6 +32,10 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(10)->by($request->ip());
         });
 
+        RateLimiter::for('admin', function (Request $request) {
+            return Limit::perMinute(120)->by($request->user()?->id ?: $request->ip());
+        });
+
         $this->routes(function () {
             Route::middleware('api')
                 ->prefix('api')
@@ -41,7 +45,7 @@ class RouteServiceProvider extends ServiceProvider
                 ->prefix('api/user')
                 ->group(base_path('routes/user.php'));
 
-            Route::middleware(['api', 'auth:sanctum'])
+            Route::middleware(['api', 'auth:sanctum', 'throttle:admin'])
                 ->prefix('api/admin')
                 ->group(base_path('routes/admin.php'));
 
